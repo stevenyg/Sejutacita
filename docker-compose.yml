@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:5.0.2
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - db:/data/db
+  service:
+    depends_on:
+      - mongodb
+    build: ./service
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    env_file:
+      - ./service/.env.local
+  orchestrator:
+    depends_on:
+      - service
+    build:
+      context: ./orchestrator
+    ports:
+      - 4000:4000
+    env_file:
+      - ./service/.env.local
+volumes:
+  db:
